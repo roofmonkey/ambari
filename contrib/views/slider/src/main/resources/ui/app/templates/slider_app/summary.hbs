@@ -15,27 +15,6 @@
 * See the License for the specific language governing permissions and
 * limitations under the License.
 }}
+Summary
 
-<div class="container">
-  <div class="row">
-    <div class="col-md-6">
-      {{#bs-panel heading="Summary"}}
-      {{/bs-panel}}
-    </div>
-    <div class="col-md-6">
-      {{#bs-panel heading="Components"}}
-      {{/bs-panel}}
-    </div>
-  </div>
-  {{#if controller.model.showMetrics}}
-    {{#bs-panel heading="Metrics"}}
-      {{#each graphs in view.parentView.graphs}}
-        <div class="row">
-          {{#each graph in graphs}}
-            <div class="col-md-3">{{view graph}}</div>
-          {{/each}}
-        </div>
-      {{/each}}
-    {{/bs-panel}}
-  {{/if}}
-</div>
+{{model.id}}

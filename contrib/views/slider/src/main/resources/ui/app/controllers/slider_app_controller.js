@@ -105,6 +105,7 @@ App.SliderAppController = Ember.ObjectController.extend({
   },
 
   /**
+   * Do request to delete current slider's app
    * Do request to <strong>freeze</strong> current slider's app
    * @returns {$.ajax}
    * @method freeze
