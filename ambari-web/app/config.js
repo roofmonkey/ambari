@@ -76,7 +76,7 @@ App.supports = {
   appTimelineServer: true,
   jobs: true,
   ubuntu: false,
-  views: false,
+  views: true,
   flume: false
 };
 
