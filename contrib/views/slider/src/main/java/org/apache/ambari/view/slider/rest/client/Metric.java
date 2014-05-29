@@ -19,6 +19,8 @@
 package org.apache.ambari.view.slider.rest.client;
 
 import org.apache.log4j.Logger;
+import org.codehaus.jackson.annotate.JsonIgnore;
+import org.codehaus.jackson.annotate.JsonIgnoreProperties;
 
 import javax.xml.xpath.XPath;
 import javax.xml.xpath.XPathExpression;
@@ -27,6 +29,7 @@ import javax.xml.xpath.XPathFactory;
 import java.util.ArrayList;
 import java.util.List;
 
+@JsonIgnoreProperties({"keyName", "matchers", "xPathExpression", "xPathExpressionComputed"})
 public class Metric {
   private static final Logger logger = Logger
       .getLogger(Metric.class);
@@ -35,9 +38,13 @@ public class Metric {
   private String metric;
   private boolean pointInTime;
   private boolean temporal;
+  @JsonIgnore
   private String keyName = null;
+  @JsonIgnore
   private List<List<String>> matchers = null;
+  @JsonIgnore
   private XPathExpression xPathExpression = null;
+  @JsonIgnore
   private boolean xPathExpressionComputed = false;
 
   private Metric() {
@@ -73,6 +80,7 @@ public class Metric {
     this.temporal = temporal;
   }
 
+  @JsonIgnore
   public XPathExpression getxPathExpression() {
     if (!xPathExpressionComputed) {
       XPathFactory xPathfactory = XPathFactory.newInstance();
@@ -90,6 +98,7 @@ public class Metric {
     return xPathExpression;
   }
 
+  @JsonIgnore
   public String getJmxBeanKeyName() {
     if (keyName == null) {
       int firstIndex = metric.indexOf(SEPARATOR);
@@ -106,6 +115,7 @@ public class Metric {
    *
    * @return
    */
+  @JsonIgnore
   public List<List<String>> getMatchers() {
     if (matchers == null) {
       List<List<String>> tmpMatchers = new ArrayList<List<String>>();
@@ -143,5 +153,4 @@ public class Metric {
       }
     }
   }
-
 }
