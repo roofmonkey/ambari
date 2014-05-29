@@ -150,6 +150,18 @@ App.SliderAppsView = App.TableView.extend({
     associations[4] = 'started';
     associations[5] = 'ended';
     return associations;
-  }.property()
+  }.property(),
+
+  hdfsUi: function() {
+    if (App.viewUrls) {
+      return App.viewUrls['dfs.namenode.http-address'];
+    }
+  }.property('App.viewUrls'),
+
+  yarnUi: function() {
+    if (App.viewUrls) {
+      return App.viewUrls['yarn.resourcemanager.webapp.address'];
+    }
+  }.property('App.viewUrls')
 
 });

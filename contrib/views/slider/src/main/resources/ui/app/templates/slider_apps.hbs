@@ -19,9 +19,31 @@
 <div id="slider-apps-table">
   <div class="box-header">
     <div class="pull-right create-app">
+    <div class="btn-toolbar">
+      <div class="btn-group">
       <a href="#" class="btn btn-primary" {{action createApp}}>
         <i class="icon-plus"></i><span>&nbsp;{{t slider.apps.create}}</span>
       </a>
+      </div>
+      <div class="btn-group">
+        <button class="btn dropdown-toggle" data-toggle="dropdown" href="#">
+          <i class="icon-cog"></i><span>&nbsp;</span>
+          <span class="caret"></span>
+        </button>
+        <ul class="dropdown-menu">
+          {{#if view.yarnUi}}
+            <li>
+              <a {{bind-attr href="view.yarnUi"}} target="_blank">YARN UI</a>
+            </li>
+          {{/if}}
+          {{#if view.hdfsUi}}
+            <li>
+              <a {{bind-attr href="view.hdfsUi"}} href="" target="_blank">HDFS UI</a>
+            </li>
+          {{/if}}
+        </ul>
+      </div>
+      </div>
     </div>
   </div>
 

@@ -4,5 +4,9 @@
   "viewErrors": [
     "Slider applications view requires HDFS service to be started",
     "Slider applications view requires YARN, HDFS and ZooKeeper services to bestarted."
-  ]
+  ],
+  "viewUrls": {
+   "dfs.namenode.http-address": "http://c6401.ambari.apache.org:50070",
+   "yarn.resourcemanager.webapp.address": "http://c6401.ambari.apache.org:8088" 
+  }
 }

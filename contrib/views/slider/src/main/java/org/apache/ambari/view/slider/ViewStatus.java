@@ -19,33 +19,43 @@
 package org.apache.ambari.view.slider;
 
 import java.util.List;
+import java.util.Map;
 
 public class ViewStatus {
-	private String version;
-	private boolean viewEnabled;
-	private List<String> viewErrors;
+  private String version;
+  private boolean viewEnabled;
+  private List<String> viewErrors;
+  private Map<String, String> viewUrls;
 
-	public String getVersion() {
-		return version;
-	}
+  public String getVersion() {
+    return version;
+  }
 
-	public void setVersion(String version) {
-		this.version = version;
-	}
+  public void setVersion(String version) {
+    this.version = version;
+  }
 
-	public boolean isViewEnabled() {
-		return viewEnabled;
-	}
+  public boolean isViewEnabled() {
+    return viewEnabled;
+  }
 
-	public void setViewEnabled(boolean viewEnabled) {
-		this.viewEnabled = viewEnabled;
-	}
+  public void setViewEnabled(boolean viewEnabled) {
+    this.viewEnabled = viewEnabled;
+  }
 
-	public List<String> getViewErrors() {
-		return viewErrors;
-	}
+  public List<String> getViewErrors() {
+    return viewErrors;
+  }
 
-	public void setViewErrors(List<String> viewErrors) {
-		this.viewErrors = viewErrors;
-	}
+  public void setViewErrors(List<String> viewErrors) {
+    this.viewErrors = viewErrors;
+  }
+
+  public Map<String, String> getViewUrls() {
+    return viewUrls;
+  }
+
+  public void setViewUrls(Map<String, String> urls) {
+    this.viewUrls = urls;
+  }
 }

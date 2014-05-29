@@ -79,8 +79,13 @@ App.initializer({
        * List of errors
        * @type {string[]}
        */
-      viewErrors: []
+      viewErrors: [],
 
+      /**
+       * Map of URL id to URL.
+       * @type {object}
+       */
+      viewUrls: {}
     });
     application.ApplicationStatusMapper.loop('load');
     application.ApplicationTypeMapper.loop('load');

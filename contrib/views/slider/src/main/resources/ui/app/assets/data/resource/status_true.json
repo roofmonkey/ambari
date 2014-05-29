@@ -1,5 +1,9 @@
 {
   "version": "0.0.1-SNAPSHOT",
   "viewEnabled": true,
-  "viewErrors": []
+  "viewErrors": [],
+  "viewUrls": {
+   "dfs.namenode.http-address": "http://c6401.ambari.apache.org:50070",
+   "yarn.resourcemanager.webapp.address": "http://c6401.ambari.apache.org:8088" 
+  }
 }

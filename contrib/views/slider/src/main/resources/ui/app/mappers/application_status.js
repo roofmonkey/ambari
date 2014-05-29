@@ -40,6 +40,7 @@ App.ApplicationStatusMapper = App.Mapper.createWithMixins(App.RunPeriodically, {
   map: {
     viewEnabled: 'viewEnabled',
     viewErrors: 'viewErrors',
+    viewUrls: 'viewUrls',
     resourcesVersion: 'version'
   },
 
