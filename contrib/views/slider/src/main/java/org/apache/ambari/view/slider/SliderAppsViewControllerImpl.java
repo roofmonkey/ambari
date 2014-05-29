@@ -88,6 +88,7 @@ public class SliderAppsViewControllerImpl implements SliderAppsViewController {
 
   private static final Logger logger = Logger
       .getLogger(SliderAppsViewControllerImpl.class);
+  private static String METRICS_PREFIX = "metrics/";
   @Inject
   private ViewContext viewContext;
   @Inject
@@ -307,10 +308,24 @@ public class SliderAppsViewControllerImpl implements SliderAppsViewController {
       }
     }
     if (properties != null && !properties.isEmpty()) {
+      SliderAppType matchedAppType = null;
+      List<SliderAppType> matchingAppTypes = getSliderAppTypes(null);
+      if (matchingAppTypes != null && matchingAppTypes.size() > 0) {
+        for (SliderAppType appType : matchingAppTypes) {
+          if ((appType.getTypeName() != null && appType.getTypeName().equalsIgnoreCase(app.getType())) &&
+              (appType.getTypeVersion() != null
+               && appType.getTypeVersion().equalsIgnoreCase(app.getAppVersion()))) {
+            matchedAppType = appType;
+            break;
+          }
+        }
+      }
+
       SliderAppMasterClient sliderAppClient = yarnApp.getTrackingUrl() == null ? null
           : new SliderAppMasterClient(yarnApp.getTrackingUrl());
       SliderAppMasterData appMasterData = null;
       Map<String, String> quickLinks = new HashMap<String, String>();
+      Set<String> gangliaMetrics = new HashSet<String>();
       for (String property : properties) {
         if ("RUNNING".equals(app.getState())) {
           if (sliderAppClient != null) {
@@ -334,23 +349,8 @@ public class SliderAppsViewControllerImpl implements SliderAppsViewController {
               }
               if (quickLinks != null && quickLinks.containsKey("JMX")) {
                 String jmxUrl = quickLinks.get("JMX");
-                List<SliderAppType> appTypes = getSliderAppTypes(null);
-                if (appTypes != null && appTypes.size() > 0) {
-                  for (SliderAppType appType : appTypes) {
-                    logger.info("TYPE: " + appType.getTypeName() + "   "
-                        + app.getType());
-                    logger.info("VERSION: " + appType.getTypeVersion() + "   "
-                        + app.getAppVersion());
-                    if ((appType.getTypeName() != null && appType.getTypeName()
-                        .equalsIgnoreCase(app.getType()))
-                        && (appType.getTypeVersion() != null && appType
-                            .getTypeVersion().equalsIgnoreCase(
-                                app.getAppVersion()))) {
-                      app.setJmx(sliderAppClient.getJmx(jmxUrl, viewContext,
-                          appType));
-                      break;
-                    }
-                  }
+                if (matchedAppType != null) {
+                  app.setJmx(sliderAppClient.getJmx(jmxUrl, viewContext, matchedAppType));
                 }
               }
               Map<String, Map<String, String>> configs = sliderAppClient
@@ -426,8 +426,21 @@ public class SliderAppsViewControllerImpl implements SliderAppsViewController {
                         + yarnApp.getName(), e);
                 throw new RuntimeException(e.getMessage(), e);
               }
+            } else if (property.startsWith(METRICS_PREFIX)) {
+              gangliaMetrics.add(property.substring(METRICS_PREFIX.length()));
             }
           }
+        }
+      }
+      if (gangliaMetrics.size() > 0) {
+        if (quickLinks.isEmpty()) {
+          quickLinks = sliderAppClient
+              .getQuickLinks(appMasterData.publisherUrl);
+        }
+        if (quickLinks != null && quickLinks.containsKey("Metrics")) {
+          String metricsUrl = quickLinks.get("Metrics");
+          app.setMetrics(
+              sliderAppClient.getGangliaMetrics(metricsUrl, gangliaMetrics, null, viewContext, matchedAppType));
         }
       }
     }
@@ -552,7 +565,7 @@ public class SliderAppsViewControllerImpl implements SliderAppsViewController {
         if (sliderAppObject != null) {
           if (sliderAppsMap.containsKey(sliderAppObject.getName())) {
             if (sliderAppsMap.get(sliderAppObject.getName()).getId()
-                .compareTo(sliderAppObject.getId()) < 0) {
+                    .compareTo(sliderAppObject.getId()) < 0) {
               sliderAppsMap.put(sliderAppObject.getName(), sliderAppObject);
             }
           } else {
@@ -560,8 +573,9 @@ public class SliderAppsViewControllerImpl implements SliderAppsViewController {
           }
         }
       }
-      if (sliderAppsMap.size() > 0)
+      if (sliderAppsMap.size() > 0) {
         sliderApps.addAll(sliderAppsMap.values());
+      }
     } finally {
       Thread.currentThread().setContextClassLoader(currentClassLoader);
     }
@@ -713,7 +727,7 @@ public class SliderAppsViewControllerImpl implements SliderAppsViewController {
     Map<String, Map<String, Map<String, Metric>>> metrics = null;
     try {
       InputStream inputStream = zipFile.getInputStream(zipFile
-          .getEntry("jmx_metrics.json"));
+                                                           .getEntry(fileName));
       ObjectMapper mapper = new ObjectMapper();
 
       metrics = mapper.readValue(inputStream,
@@ -874,11 +888,12 @@ public class SliderAppsViewControllerImpl implements SliderAppsViewController {
       properties.add("id");
       properties.add("name");
       final SliderApp sliderApp = getSliderApp(appId, properties);
-      if (sliderApp == null)
+      if (sliderApp == null) {
         throw new ApplicationNotFoundException(appId);
+      }
 
       ApplicationId applicationId = UserGroupInformation.getBestUGI(null,
-          "yarn").doAs(new PrivilegedExceptionAction<ApplicationId>() {
+                                                                    "yarn").doAs(new PrivilegedExceptionAction<ApplicationId>() {
         public ApplicationId run() throws IOException, YarnException {
           SliderClient sliderClient = getSliderClient();
           ActionFreezeArgs freezeArgs = new ActionFreezeArgs();
@@ -903,10 +918,11 @@ public class SliderAppsViewControllerImpl implements SliderAppsViewController {
       properties.add("id");
       properties.add("name");
       final SliderApp sliderApp = getSliderApp(appId, properties);
-      if (sliderApp == null)
+      if (sliderApp == null) {
         throw new ApplicationNotFoundException(appId);
+      }
       ApplicationId applicationId = UserGroupInformation.getBestUGI(null,
-          "yarn").doAs(new PrivilegedExceptionAction<ApplicationId>() {
+                                                                    "yarn").doAs(new PrivilegedExceptionAction<ApplicationId>() {
         public ApplicationId run() throws IOException, YarnException {
           SliderClient sliderClient = getSliderClient();
           ActionThawArgs thawArgs = new ActionThawArgs();

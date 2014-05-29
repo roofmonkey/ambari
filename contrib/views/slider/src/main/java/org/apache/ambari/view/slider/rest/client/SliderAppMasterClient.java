@@ -18,14 +18,10 @@
 
 package org.apache.ambari.view.slider.rest.client;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
-
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import org.apache.ambari.server.controller.ganglia.GangliaMetric;
+import org.apache.ambari.server.controller.spi.TemporalInfo;
 import org.apache.ambari.view.URLStreamProvider;
 import org.apache.ambari.view.ViewContext;
 import org.apache.ambari.view.slider.SliderAppType;
@@ -33,8 +29,15 @@ import org.apache.ambari.view.slider.SliderAppTypeComponent;
 import org.apache.commons.httpclient.HttpException;
 import org.apache.log4j.Logger;
 
-import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
+import java.util.Set;
 
 public class SliderAppMasterClient extends BaseHttpClient {
 
@@ -122,7 +125,7 @@ public class SliderAppMasterClient extends BaseHttpClient {
             continue;
           }
           JsonElement entryJson = super.doGetJson(providerUrl, "/slider/"
-              + entry.getKey());
+                                                               + entry.getKey());
           if (entryJson != null) {
             JsonObject configsObj = entryJson.getAsJsonObject().get("entries")
                 .getAsJsonObject();
@@ -146,15 +149,74 @@ public class SliderAppMasterClient extends BaseHttpClient {
     }
   }
 
+  public Map<String, Number[][]> getGangliaMetrics(String gangliaUrl,
+                                               Set<String> metricsRequested,
+                                               TemporalInfo temporalInfo,
+                                               ViewContext context,
+                                               SliderAppType appType) {
+    Map<String, Number[][]> retVal = new HashMap<String, Number[][]>();
+    Map<String, GangliaMetric> receivedMetrics = null;
+    List<String> components = new ArrayList<String>();
+    for (SliderAppTypeComponent appTypeComponent : appType.getTypeComponents()) {
+      components.add(appTypeComponent.getName());
+    }
+
+    Map<String, Map<String, Map<String, Metric>>> metrics = appType.getGangliaMetrics();
+    Map<String, Metric> relevantMetrics = getRelevantMetrics(metrics, components);
+    Set<String> metricsToRead = new HashSet<String>();
+    Map<String, String> reverseNameLookup = new HashMap<String, String>();
+    for (String key : relevantMetrics.keySet()) {
+      if (metricsRequested.contains(key)) {
+        String metricName = relevantMetrics.get(key).getMetric();
+        metricsToRead.add(metricName);
+        reverseNameLookup.put(metricName, key);
+      }
+    }
+
+    if (metricsToRead.size() != 0) {
+      try {
+        String specWithParams = SliderAppGangliaHelper.getSpec(gangliaUrl, metricsToRead, temporalInfo);
+        logger.info("Using spec: " + specWithParams);
+        if (specWithParams != null) {
+
+          String spec = null;
+          String params = null;
+          String[] tokens = specWithParams.split("\\?", 2);
+
+          try {
+            spec = tokens[0];
+            params = tokens[1];
+          } catch (ArrayIndexOutOfBoundsException e) {
+            logger.info(e.toString());
+          }
+
+          receivedMetrics = SliderAppGangliaHelper.getGangliaMetrics(context, spec, params);
+        }
+      } catch (Exception e) {
+        logger.warn("Unable to retrieve ganglia metrics. " + e.getMessage());
+      }
+    }
+
+    if (receivedMetrics != null) {
+      for (GangliaMetric metric : receivedMetrics.values()) {
+        if (reverseNameLookup.containsKey(metric.getMetric_name())) {
+          retVal.put(reverseNameLookup.get(metric.getMetric_name()), metric.getDatapoints());
+        }
+      }
+    }
+
+    return retVal;
+  }
+
   /**
    * Provides only the interesting JMX metric names and values.
-   * 
+   *
    * @param jmxUrl
-   * 
+   *
    * @return
    */
   public Map<String, String> getJmx(String jmxUrl, ViewContext context,
-      SliderAppType appType) {
+                                    SliderAppType appType) {
     Map<String, String> jmxProperties = new HashMap<String, String>();
     if (appType == null || appType.getJmxMetrics() == null) {
       logger
@@ -167,12 +229,14 @@ public class SliderAppMasterClient extends BaseHttpClient {
       components.add(appTypeComponent.getName());
     }
 
-    Map<String, Map<String, Map<String, Metric>>> metrics = appType
-        .getJmxMetrics();
-    Map<String, Metric> relevantMetrics = getRelevantMetrics(metrics,
-        components);
-    SliderAppJmxHelper.JMXTypes jmxType = SliderAppJmxHelper
-        .jmxTypeExpected(relevantMetrics);
+    Map<String, Map<String, Map<String, Metric>>> metrics = appType.getJmxMetrics();
+    Map<String, Metric> relevantMetrics = getRelevantMetrics(metrics, components);
+    if (relevantMetrics.size() == 0) {
+      logger.info("No metrics found for components defined in the app.");
+      return jmxProperties;
+    }
+
+    SliderAppJmxHelper.JMXTypes jmxType = SliderAppJmxHelper.jmxTypeExpected(relevantMetrics);
     if (jmxType == null) {
       logger
           .info("jmx_metrics.json is malformed. It may have mixed metric key types of unsupported metric key types.");
@@ -193,20 +257,20 @@ public class SliderAppMasterClient extends BaseHttpClient {
 
       if (jmxStream != null) {
         switch (jmxType) {
-        case JMX_BEAN:
-          SliderAppJmxHelper.extractMetricsFromJmxBean(jmxStream, jmxUrl,
-              jmxProperties, relevantMetrics);
-          break;
-        case JSON:
-          SliderAppJmxHelper.extractMetricsFromJmxJson(jmxStream, jmxUrl,
-              jmxProperties, relevantMetrics);
-          break;
-        case XML:
-          SliderAppJmxHelper.extractMetricsFromJmxXML(jmxStream, jmxUrl,
-              jmxProperties, relevantMetrics);
-          break;
-        default:
-          logger.info("Unsupported jmx type.");
+          case JMX_BEAN:
+            SliderAppJmxHelper.extractMetricsFromJmxBean(jmxStream, jmxUrl,
+                                                         jmxProperties, relevantMetrics);
+            break;
+          case JSON:
+            SliderAppJmxHelper.extractMetricsFromJmxJson(jmxStream, jmxUrl,
+                                                         jmxProperties, relevantMetrics);
+            break;
+          case XML:
+            SliderAppJmxHelper.extractMetricsFromJmxXML(jmxStream, jmxUrl,
+                                                        jmxProperties, relevantMetrics);
+            break;
+          default:
+            logger.info("Unsupported jmx type.");
         }
       }
     } catch (Exception e) {

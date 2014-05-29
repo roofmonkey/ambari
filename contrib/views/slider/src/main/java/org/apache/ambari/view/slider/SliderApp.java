@@ -38,7 +38,7 @@ public class SliderApp {
   private Map<String, String> urls;
   private Map<String, Map<String, String>> configs;
   private Map<String, SliderAppComponent> components;
-  private Map<String, Object> metrics;
+  private Map<String, Number[][]> metrics;
 
   public String getName() {
     return name;
@@ -128,11 +128,11 @@ public class SliderApp {
     this.components = components;
   }
 
-  public Map<String, Object> getMetrics() {
+  public Map<String, Number[][]> getMetrics() {
     return metrics;
   }
 
-  public void setMetrics(Map<String, Object> metrics) {
+  public void setMetrics(Map<String, Number[][]> metrics) {
     this.metrics = metrics;
   }
 
