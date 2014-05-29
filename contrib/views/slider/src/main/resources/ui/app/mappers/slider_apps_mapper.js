@@ -112,6 +112,13 @@ App.SliderAppsMapper = App.Mapper.createWithMixins(App.RunPeriodically, {
     return quickLinks.mapProperty('id');
   },
 
+  parseObject: function(o) {
+    if (Ember.typeOf(o) !== 'object') return [];
+    return Ember.keys(o).map(function(key) {
+      return {key: key, value: o[key]};
+    });
+  },
+
   /**
    * Parse loaded data
    * Load <code>App.SliderApp</code> model
@@ -125,8 +132,9 @@ App.SliderAppsMapper = App.Mapper.createWithMixins(App.RunPeriodically, {
 
     data.items.forEach(function(app) {
       var componentsId = app.components ? self.parseComponents(app) : [],
-      configs = app.configs ? self.parseConfigs(app) : {};
-      quickLinks = self.parseQuickLinks(app);
+      configs = app.configs ? self.parseConfigs(app) : {},
+      quickLinks = self.parseQuickLinks(app),
+      jmx = self.parseObject(app.jmx);
 
       apps.push(
         Ember.Object.create({
@@ -142,6 +150,7 @@ App.SliderAppsMapper = App.Mapper.createWithMixins(App.RunPeriodically, {
           components: componentsId,
           quickLinks: quickLinks,
           configs: configs,
+          jmx: jmx,
           runtimeProperties: app.configs
         })
       );
