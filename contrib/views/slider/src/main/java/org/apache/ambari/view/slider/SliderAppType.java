@@ -38,6 +38,8 @@ public class SliderAppType {
   private Map<String, Map<String, Map<String, Metric>>> jmxMetrics;
   @JsonIgnore
   private Map<String, Map<String, Map<String, Metric>>> gangliaMetrics;
+  private List<String> supportedMetrics;
+
 
   @JsonIgnore
   public Map<String, Map<String, Map<String, Metric>>> getJmxMetrics() {
@@ -55,6 +57,14 @@ public class SliderAppType {
 
   public void setGangliaMetrics(Map<String, Map<String, Map<String, Metric>>> gangliaMetrics) {
     this.gangliaMetrics = gangliaMetrics;
+  }
+
+  public List<String> getSupportedMetrics() {
+    return supportedMetrics;
+  }
+
+  public void setSupportedMetrics(List<String> supportedMetrics) {
+    this.supportedMetrics = supportedMetrics;
   }
 
   public String getId() {

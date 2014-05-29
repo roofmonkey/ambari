@@ -18,16 +18,22 @@
 
 package org.apache.ambari.view.slider.rest.client;
 
+import org.apache.ambari.server.controller.internal.TemporalInfoImpl;
+import org.apache.log4j.Logger;
 import org.junit.Assert;
 import org.junit.Test;
 
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 public class SliderAppMasterClientTest {
+  private static final Logger logger = Logger
+      .getLogger(SliderAppMasterClientTest.class);
 
   @Test
   public void testSliderClientClassAvailability() {
@@ -173,5 +179,23 @@ public class SliderAppMasterClientTest {
     Assert.assertEquals(jmxProperties.get("totals_diskrate"), "0.0");
     Assert.assertEquals(jmxProperties.get("totals_diskaccess"), "");
     Assert.assertEquals(jmxProperties.get("badTabletServers"), "");
+  }
+
+  @Test
+  public void testGangliaHelper() throws Exception {
+    Set<String> metricSet = new HashSet<String>();
+    metricSet.add("m1");
+    metricSet.add("m2");
+    String spec = SliderAppGangliaHelper.getSpec(
+        "http://c6402.ambari.apache.org/cgi-bin/rrd.py?c=Application2", metricSet, null);
+    logger.info("URL: " + spec);
+    Assert.assertTrue(
+        spec.startsWith("http://c6402.ambari.apache.org/cgi-bin/rrd.py?c=Application2&h=__SummaryInfo__&m=m1%2Cm2&e"));
+    TemporalInfoImpl tInfo = new TemporalInfoImpl(2, 3, 1);
+    spec = SliderAppGangliaHelper.getSpec(
+        "http://c6402.ambari.apache.org/cgi-bin/rrd.py?c=Application2", metricSet, tInfo);
+    logger.info("URL: " + spec);
+    Assert.assertTrue(
+        spec.startsWith("http://c6402.ambari.apache.org/cgi-bin/rrd.py?c=Application2&h=__SummaryInfo__&m=m1%2Cm2&s=2&e=3&r=1"));
   }
 }
