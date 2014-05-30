@@ -94,7 +94,7 @@ public class SliderAppsViewControllerImpl implements SliderAppsViewController {
   private AmbariClient ambariClient;
   private List<SliderAppType> appTypes;
   private Integer createAppCounter = -1;
-
+  private Map<String, MetricsHolder> appMetrics = new HashMap<String, MetricsHolder>();
   private String getAppsFolderPath() {
     return viewContext
         .getAmbariProperty(org.apache.ambari.server.configuration.Configuration.RESOURCES_DIR_KEY)
@@ -350,8 +350,8 @@ public class SliderAppsViewControllerImpl implements SliderAppsViewController {
               if (quickLinks != null && quickLinks.containsKey("JMX")) {
                 String jmxUrl = quickLinks.get("JMX");
                 if (matchedAppType != null) {
-                  app.setJmx(sliderAppClient.getJmx(jmxUrl, viewContext,
-                      matchedAppType));
+                  MetricsHolder metricsHolder = appMetrics.get(matchedAppType.uniqueName());
+                  app.setJmx(sliderAppClient.getJmx(jmxUrl, viewContext, matchedAppType, metricsHolder));
                 }
               }
               Map<String, Map<String, String>> configs = sliderAppClient
@@ -444,8 +444,9 @@ public class SliderAppsViewControllerImpl implements SliderAppsViewController {
         }
         if (quickLinks != null && quickLinks.containsKey("Metrics")) {
           String metricsUrl = quickLinks.get("Metrics");
-          app.setMetrics(sliderAppClient.getGangliaMetrics(metricsUrl,
-              gangliaMetrics, null, viewContext, matchedAppType));
+          MetricsHolder metricsHolder = appMetrics.get(matchedAppType.uniqueName());
+          app.setMetrics(
+              sliderAppClient.getGangliaMetrics(metricsUrl, gangliaMetrics, null, viewContext, matchedAppType, metricsHolder));
         }
       }
     }
@@ -715,11 +716,12 @@ public class SliderAppsViewControllerImpl implements SliderAppsViewController {
                 appTypeComponentList.add(appTypeComponent);
               }
 
-              appType.setJmxMetrics(readMetrics(zipFile, "jmx_metrics.json"));
-              appType.setGangliaMetrics(readMetrics(zipFile,
-                  "ganglia_metrics.json"));
-              appType.setSupportedMetrics(getSupportedMetrics(appType
-                  .getGangliaMetrics()));
+              MetricsHolder metricsHolder = new MetricsHolder();
+              metricsHolder.setJmxMetrics(readMetrics(zipFile, "jmx_metrics.json"));
+              metricsHolder.setGangliaMetrics(readMetrics(zipFile,
+                                                    "ganglia_metrics.json"));
+              appType.setSupportedMetrics(getSupportedMetrics(metricsHolder.getGangliaMetrics()));
+              appMetrics.put(appType.uniqueName(), metricsHolder);
 
               appType.setTypeComponents(appTypeComponentList);
               appTypes.add(appType);

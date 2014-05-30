@@ -24,6 +24,7 @@ import org.apache.ambari.server.controller.ganglia.GangliaMetric;
 import org.apache.ambari.server.controller.spi.TemporalInfo;
 import org.apache.ambari.view.URLStreamProvider;
 import org.apache.ambari.view.ViewContext;
+import org.apache.ambari.view.slider.MetricsHolder;
 import org.apache.ambari.view.slider.SliderAppType;
 import org.apache.ambari.view.slider.SliderAppTypeComponent;
 import org.apache.commons.httpclient.HttpException;
@@ -150,57 +151,62 @@ public class SliderAppMasterClient extends BaseHttpClient {
   }
 
   public Map<String, Number[][]> getGangliaMetrics(String gangliaUrl,
-                                               Set<String> metricsRequested,
-                                               TemporalInfo temporalInfo,
-                                               ViewContext context,
-                                               SliderAppType appType) {
+                                                   Set<String> metricsRequested,
+                                                   TemporalInfo temporalInfo,
+                                                   ViewContext context,
+                                                   SliderAppType appType,
+                                                   MetricsHolder metricHolder) {
+
     Map<String, Number[][]> retVal = new HashMap<String, Number[][]>();
-    Map<String, GangliaMetric> receivedMetrics = null;
-    List<String> components = new ArrayList<String>();
-    for (SliderAppTypeComponent appTypeComponent : appType.getTypeComponents()) {
-      components.add(appTypeComponent.getName());
-    }
 
-    Map<String, Map<String, Map<String, Metric>>> metrics = appType.getGangliaMetrics();
-    Map<String, Metric> relevantMetrics = getRelevantMetrics(metrics, components);
-    Set<String> metricsToRead = new HashSet<String>();
-    Map<String, String> reverseNameLookup = new HashMap<String, String>();
-    for (String key : relevantMetrics.keySet()) {
-      if (metricsRequested.contains(key)) {
-        String metricName = relevantMetrics.get(key).getMetric();
-        metricsToRead.add(metricName);
-        reverseNameLookup.put(metricName, key);
+    if (metricHolder != null && metricHolder.getGangliaMetrics() != null) {
+      Map<String, GangliaMetric> receivedMetrics = null;
+      List<String> components = new ArrayList<String>();
+      for (SliderAppTypeComponent appTypeComponent : appType.getTypeComponents()) {
+        components.add(appTypeComponent.getName());
       }
-    }
 
-    if (metricsToRead.size() != 0) {
-      try {
-        String specWithParams = SliderAppGangliaHelper.getSpec(gangliaUrl, metricsToRead, temporalInfo);
-        logger.info("Using spec: " + specWithParams);
-        if (specWithParams != null) {
-
-          String spec = null;
-          String params = null;
-          String[] tokens = specWithParams.split("\\?", 2);
-
-          try {
-            spec = tokens[0];
-            params = tokens[1];
-          } catch (ArrayIndexOutOfBoundsException e) {
-            logger.info(e.toString());
-          }
-
-          receivedMetrics = SliderAppGangliaHelper.getGangliaMetrics(context, spec, params);
+      Map<String, Map<String, Map<String, Metric>>> metrics = metricHolder.getGangliaMetrics();
+      Map<String, Metric> relevantMetrics = getRelevantMetrics(metrics, components);
+      Set<String> metricsToRead = new HashSet<String>();
+      Map<String, String> reverseNameLookup = new HashMap<String, String>();
+      for (String key : relevantMetrics.keySet()) {
+        if (metricsRequested.contains(key)) {
+          String metricName = relevantMetrics.get(key).getMetric();
+          metricsToRead.add(metricName);
+          reverseNameLookup.put(metricName, key);
         }
-      } catch (Exception e) {
-        logger.warn("Unable to retrieve ganglia metrics. " + e.getMessage());
       }
-    }
 
-    if (receivedMetrics != null) {
-      for (GangliaMetric metric : receivedMetrics.values()) {
-        if (reverseNameLookup.containsKey(metric.getMetric_name())) {
-          retVal.put(reverseNameLookup.get(metric.getMetric_name()), metric.getDatapoints());
+      if (metricsToRead.size() != 0) {
+        try {
+          String specWithParams = SliderAppGangliaHelper.getSpec(gangliaUrl, metricsToRead, temporalInfo);
+          logger.info("Using spec: " + specWithParams);
+          if (specWithParams != null) {
+
+            String spec = null;
+            String params = null;
+            String[] tokens = specWithParams.split("\\?", 2);
+
+            try {
+              spec = tokens[0];
+              params = tokens[1];
+            } catch (ArrayIndexOutOfBoundsException e) {
+              logger.info(e.toString());
+            }
+
+            receivedMetrics = SliderAppGangliaHelper.getGangliaMetrics(context, spec, params);
+          }
+        } catch (Exception e) {
+          logger.warn("Unable to retrieve ganglia metrics. " + e.getMessage());
+        }
+      }
+
+      if (receivedMetrics != null) {
+        for (GangliaMetric metric : receivedMetrics.values()) {
+          if (reverseNameLookup.containsKey(metric.getMetric_name())) {
+            retVal.put(reverseNameLookup.get(metric.getMetric_name()), metric.getDatapoints());
+          }
         }
       }
     }
@@ -215,10 +221,12 @@ public class SliderAppMasterClient extends BaseHttpClient {
    *
    * @return
    */
-  public Map<String, String> getJmx(String jmxUrl, ViewContext context,
-                                    SliderAppType appType) {
+  public Map<String, String> getJmx(String jmxUrl,
+                                    ViewContext context,
+                                    SliderAppType appType,
+                                    MetricsHolder metricsHolder) {
     Map<String, String> jmxProperties = new HashMap<String, String>();
-    if (appType == null || appType.getJmxMetrics() == null) {
+    if (appType == null || metricsHolder == null || metricsHolder.getJmxMetrics() == null) {
       logger
           .info("AppType must be provided and it must contain jmx_metrics.json to extract jmx properties");
       return jmxProperties;
@@ -229,7 +237,7 @@ public class SliderAppMasterClient extends BaseHttpClient {
       components.add(appTypeComponent.getName());
     }
 
-    Map<String, Map<String, Map<String, Metric>>> metrics = appType.getJmxMetrics();
+    Map<String, Map<String, Map<String, Metric>>> metrics = metricsHolder.getJmxMetrics();
     Map<String, Metric> relevantMetrics = getRelevantMetrics(metrics, components);
     if (relevantMetrics.size() == 0) {
       logger.info("No metrics found for components defined in the app.");
