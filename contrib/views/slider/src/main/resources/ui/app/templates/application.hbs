@@ -17,12 +17,19 @@
 }}
 
 <div>
-  <h2>{{t slider.apps.title}}</h2>
+    <h2>{{t slider.apps.title}}</h2>
 </div>
-<div class="alert alert-danger">
-  {{#each error in App.viewErrors}}
-    <h3>{{error}}</h3>
-  {{/each}}
-</div>
-{{outlet}}
+{{#if App.isDataLoaded}}
+  {{#unless App.viewEnabled}}
+    <div class="alert alert-danger">
+      {{#each error in App.viewErrors}}
+          <h3>{{error}}</h3>
+      {{/each}}
+    </div>
+  {{/unless}}
+  {{outlet}}
+{{/if}}
+
+
+
 

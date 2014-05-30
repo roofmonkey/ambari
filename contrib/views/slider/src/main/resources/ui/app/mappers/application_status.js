@@ -69,6 +69,7 @@ App.ApplicationStatusMapper = App.Mapper.createWithMixins(App.RunPeriodically, {
     Ember.keys(map).forEach(function(key) {
       App.set(key, Ember.getWithDefault(data, map[key], ''));
     });
+    App.set('isDataLoaded', true);
   }
 
 });

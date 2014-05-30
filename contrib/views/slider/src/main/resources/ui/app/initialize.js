@@ -76,6 +76,12 @@ App.initializer({
       viewEnabled: false,
 
       /**
+       *  ApplicationStatusMapper finished loading data
+       * @type {bool}
+       */
+      isDataLoaded: false,
+
+      /**
        * List of errors
        * @type {string[]}
        */
