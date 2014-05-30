@@ -19,44 +19,44 @@
 <div id="slider-apps-table">
   <div class="box-header">
     <div class="pull-right create-app">
-    <div class="btn-toolbar">
-      <div class="btn-group">
-      <a href="#" class="btn btn-primary" {{action createApp}}>
-        <i class="icon-plus"></i><span>&nbsp;{{t slider.apps.create}}</span>
-      </a>
-      </div>
-      <div class="btn-group">
-        <button class="btn dropdown-toggle" data-toggle="dropdown" href="#">
-          <i class="icon-cog"></i><span>&nbsp;</span>
-          <span class="caret"></span>
-        </button>
-        <ul class="dropdown-menu">
-          {{#if view.yarnUi}}
-            <li>
-              <a {{bind-attr href="view.yarnUi"}} target="_blank">YARN UI</a>
-            </li>
-          {{/if}}
-          {{#if view.hdfsUi}}
-            <li>
-              <a {{bind-attr href="view.hdfsUi"}} href="" target="_blank">HDFS UI</a>
-            </li>
-          {{/if}}
-        </ul>
-      </div>
+      <div class="btn-toolbar">
+        <div class="btn-group">
+          <a href="#" class="btn btn-primary" {{action createApp}}>
+            <i class="icon-plus"></i><span>&nbsp;{{t slider.apps.create}}</span>
+          </a>
+        </div>
+        <div class="btn-group">
+          <button class="btn dropdown-toggle" data-toggle="dropdown" href="#">
+            <i class="icon-cog"></i><span>&nbsp;</span>
+            <span class="caret"></span>
+          </button>
+          <ul class="dropdown-menu">
+            {{#if view.yarnUi}}
+              <li>
+                <a {{bind-attr href="view.yarnUi"}} target="_blank">YARN UI</a>
+              </li>
+            {{/if}}
+            {{#if view.hdfsUi}}
+              <li>
+                <a {{bind-attr href="view.hdfsUi"}} href="" target="_blank">HDFS UI</a>
+              </li>
+            {{/if}}
+          </ul>
+        </div>
       </div>
     </div>
   </div>
 
   <table class="datatable table table-bordered table-striped" id="slider-table">
     <thead>
-    {{#view view.sortView classNames="label-row" contentBinding="view.filteredContent"}}
-      {{view view.parentView.nameSort}}
-      {{view view.parentView.statusSort}}
-      {{view view.parentView.typeSort}}
-      {{view view.parentView.userSort}}
-      {{view view.parentView.startSort}}
-      {{view view.parentView.endSort}}
-    {{/view}}
+      {{#view view.sortView classNames="label-row" contentBinding="view.filteredContent"}}
+        {{view view.parentView.nameSort}}
+        {{view view.parentView.statusSort}}
+        {{view view.parentView.typeSort}}
+        {{view view.parentView.userSort}}
+        {{view view.parentView.startSort}}
+        {{view view.parentView.endSort}}
+      {{/view}}
     <tr id="filter-row">
       <th>{{view view.nameFilterView}}</th>
       <th>{{view view.statusFilterView}}</th>
@@ -67,9 +67,9 @@
     </tr>
     </thead>
     <tbody>
-    {{#if view.pageContent}}
-      {{#each slider in view.pageContent}}
-        {{#view view.SliderView contentBinding="slider"}}
+      {{#if view.pageContent}}
+        {{#each slider in view.pageContent}}
+          {{#view view.SliderView contentBinding="slider"}}
 
           <td>
             {{#link-to 'slider_app.summary' slider}}
@@ -87,16 +87,16 @@
 
           <td>{{slider.ended}}</td>
 
-        {{/view}}
-      {{/each}}
-    {{else}}
+          {{/view}}
+        {{/each}}
+      {{else}}
       <tr>
         <td class="first"></td>
-        <td colspan="11">
+        <td colspan="5">
           {{t tableView.filters.noItems}}
         </td>
       </tr>
-    {{/if}}
+      {{/if}}
     </tbody>
   </table>
   <div class="page-bar">
@@ -107,13 +107,6 @@
     <div class="items-on-page">
       <label>{{t common.show}} {{view view.rowsPerPageSelectView selectionBinding="view.displayLength"}}</label>
     </div>
-    {{!--
-    <div class="info">{{view.paginationInfo}}</div>
-    <div class="paging_two_button">
-      {{view view.paginationLeft}}
-      {{view view.paginationRight}}
-    </div>
-    --}}
   </div>
 </div>
 {{outlet}}

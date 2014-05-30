@@ -62,6 +62,8 @@ Em.I18n.translations = {
   'slider.apps.create': 'Create App',
   'sliderApps.filters.info': '{0} of {1} sliders showing',
 
+  'slider.app.flexPopup.title': 'Allocate Resources',
+
   'wizard.name': 'Create Slider App',
   'wizard.step1.name': 'Select Type',
   'wizard.step1.header': 'Available Types',
@@ -80,5 +82,10 @@ Em.I18n.translations = {
   'wizard.step3.error': 'Only \"key\":\"value\" format allowed.',
   'wizard.step4.name': 'Deploy',
   'wizard.step4.appName': 'App Name',
-  'wizard.step4.appType': 'App Type'
+  'wizard.step4.appType': 'App Type',
+
+  'graphs.noData.title': 'No Data',
+  'graphs.noData.message': 'There was no data available. Possible reasons include inaccessible Ganglia service.',
+  'graphs.noDataAtTime.message': 'No available data for the time period.'
+
 };

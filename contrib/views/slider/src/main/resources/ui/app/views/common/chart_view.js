@@ -252,7 +252,6 @@ App.ChartView = Ember.View.extend({
    *
    */
   transformData: function (seriesData, displayName) {
-    var seriesArray = [];
     if (seriesData != null) {
       // Is it a string?
       if ("string" == typeof seriesData) {
@@ -298,14 +297,12 @@ App.ChartView = Ember.View.extend({
    * series.
    * May be redefined in child views
    *
-   * @param series
-   *          Series for which color is being requested
    * @return color String. Returning null allows this chart to pick a color
    *         from palette.
    * @default null
    * @type Function
    */
-  colorForSeries: function (series) {
+  colorForSeries: function () {
     return null;
   },
 
@@ -367,11 +364,11 @@ App.ChartView = Ember.View.extend({
       this.set('isReady', true);
       //if Axis X time interval is default(60 minutes)
       if(this.get('timeUnitSeconds') === 3600){
-        this._showMessage('info', this.t('graphs.noData.title'), this.t('graphs.noData.message'));
+        this._showMessage('info', Ember.I18n.t('graphs.noData.title'), Ember.I18n.t('graphs.noData.message'));
         this.set('hasData', false);
       }
       else {
-        this._showMessage('info', this.t('graphs.noData.title'), this.t('graphs.noDataAtTime.message'));
+        this._showMessage('info', Ember.I18n.t('graphs.noData.title'), Ember.I18n.t('graphs.noDataAtTime.message'));
       }
       this.set('isPopup', false);
     }
@@ -442,7 +439,7 @@ App.ChartView = Ember.View.extend({
     var palette = new Rickshaw.Color.Palette({ scheme: 'munin'});
     // Format series for display
     var series_min_length = 100000000;
-    data.forEach(function (series, index) {
+    data.forEach(function (series) {
       var seriesColor = self.colorForSeries(series);
       if (seriesColor == null) {
         seriesColor = palette.color();
@@ -479,7 +476,7 @@ App.ChartView = Ember.View.extend({
     }.bind(this));
 
     // All series should have equal length
-    data.forEach(function(series, index) {
+    data.forEach(function(series) {
       if (series.data.length > series_min_length) {
         series.data.length = series_min_length;
       }

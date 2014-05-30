@@ -52,17 +52,19 @@ App.AppMetricView = App.ChartView.extend({
   },
 
   transformToSeries: function (jsonData) {
-    var seriesArray = [];
-    var metricName = this.get('metricName');
-    if (jsonData && jsonData.metrics) {
-      for ( var name in jsonData.metrics) {
-        var displayName = metricName;
-        var seriesData = jsonData.metrics[metricName];
+    var self = this,
+      seriesArray = [],
+      metricName = this.get('metricName'),
+      metrics = Ember.get(jsonData, 'metrics');
+
+    if (!Ember.isNone(metrics)) {
+      Ember.keys(metrics).forEach(function() {
+        var seriesData = metrics[metricName];
         if (seriesData) {
-          var s = this.transformData(seriesData, displayName);
+          var s = self.transformData(seriesData, metricName);
           seriesArray.push(s);
         }
-      }
+      });
     }
     return seriesArray;
   }

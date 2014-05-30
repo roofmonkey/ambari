@@ -54,28 +54,28 @@
     </div>
     <div class="col-md-6">
       {{#bs-panel heading="Components"}}
-          <table class="table section-table table-condensed">
-              <tbody>
-              {{#each controller.model.components}}
-                <tr>
-                  <td><i {{bind-attr class="isRunning:icon-ok-sign:icon-warning-sign"}}></i><span>&nbsp;</span>{{componentName}}</td>
-                  <td>{{host}}</td>
-                </tr>
-              {{/each}}
-              </tbody>
-          </table>
+        <table class="table section-table table-condensed">
+          <tbody>
+            {{#each controller.model.components}}
+            <tr>
+              <td>
+                <i {{bind-attr class="isRunning:icon-ok-sign:icon-warning-sign"}}></i><span>&nbsp;</span>{{componentName}}
+              </td>
+              <td>{{host}}</td>
+            </tr>
+            {{/each}}
+          </tbody>
+        </table>
       {{/bs-panel}}
     </div>
   </div>
   {{#if controller.model.showMetrics}}
     {{#bs-panel heading="Metrics"}}
-      {{#each graphs in view.parentView.graphs}}
-        <div class="row">
-          {{#each graph in graphs}}
-            <div class="col-md-3">{{view graph}}</div>
-          {{/each}}
-        </div>
-      {{/each}}
+      <div class="row">
+        {{#each graph in view.parentView.graphs}}
+            <div class="col-md-3">{{view graph.view}}</div>
+        {{/each}}
+      </div>
     {{/bs-panel}}
   {{/if}}
 </div>
