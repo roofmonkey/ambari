@@ -24,6 +24,7 @@ public class SliderAppTypeComponent {
 	private String category;
 	private String displayName;
 	private int priority;
+	private int minInstanceCount;
 	private int instanceCount;
 	private int maxInstanceCount;
 	private int yarnMemory;
@@ -100,4 +101,12 @@ public class SliderAppTypeComponent {
 	public void setCategory(String category) {
 		this.category = category;
 	}
+
+  public int getMinInstanceCount() {
+    return minInstanceCount;
+  }
+
+  public void setMinInstanceCount(int minInstanceCount) {
+    this.minInstanceCount = minInstanceCount;
+  }
 }
