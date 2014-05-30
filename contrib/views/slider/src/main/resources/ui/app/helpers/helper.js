@@ -17,6 +17,18 @@
  */
 
 
+/**
+ * Remove spaces at beginning and ending of line.
+ * @example
+ *  var str = "  I'm a string  "
+ *  str.trim() // return "I'm a string"
+ * @method trim
+ * @return {string}
+ */
+String.prototype.trim = function () {
+  return this.replace(/^\s\s*/, '').replace(/\s\s*$/, '');
+};
+
 String.prototype.format = function () {
   var args = arguments;
   return this.replace(/{(\d+)}/g, function (match, number) {

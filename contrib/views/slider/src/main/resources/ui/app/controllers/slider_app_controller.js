@@ -42,11 +42,19 @@ App.SliderAppController = Ember.ObjectController.extend({
         confirm: true
       });
     }
+    else {
+      actions.pushObject({
+        title: 'Destroy',
+        action: 'destroy',
+        confirm: true
+      });
+    }
     if ('FINISHED' !== status) {
       actions.push({
         title: 'Flex',
         action: 'flex',
-        confirm: true
+        confirm: false,
+        customAction: 'showFlexModal'
       });
     }
     if ('FROZEN' === status) {
@@ -54,11 +62,6 @@ App.SliderAppController = Ember.ObjectController.extend({
         {
           title: 'Thaw',
           action: 'thaw',
-          confirm: false
-        },
-        {
-          title: 'Destroy',
-          action: 'destroy',
           confirm: true
         }
       ]);
@@ -71,6 +74,48 @@ App.SliderAppController = Ember.ObjectController.extend({
    * @type {string}
    */
   currentAction: null,
+
+  /**
+   * Buttons for custom modal popup action
+   * @type {Ember.Object[]}
+   */
+  customActionPopupButtons: [
+    Ember.Object.create({title: Ember.I18n.t('common.finish'), clicked:"submitCustom"}),
+    Ember.Object.create({title: Ember.I18n.t('common.cancel'), clicked:"restoreUpdates", dismiss: 'modal'})
+  ],
+
+  /**
+   * Enable/disable updating <code>componentsForFlex</code>
+   * Used when Flex Modal Popup is open
+   * @type {bool}
+   */
+  updateFlexComponents: true,
+
+  /**
+   * Did user do mistake while input fields
+   * @type {bool}
+   */
+  componentsForFlexContainsError: false,
+
+  /**
+   * List of components to Flex
+   * @type {Ember.Object[]}
+   */
+  componentsForFlex: [],
+
+  /**
+   * Update <code>componentsForFlex</code> if <code>updateFlexComponents</code> is true
+   * @method componentsForFlexObs
+   */
+  componentsForFlexObs: function() {
+    if (!this.get('updateFlexComponents')) return;
+    this.set('componentsForFlex', this.get('model.appType.components').map(function(c) {
+      return Ember.Object.create({
+        name: c.get('displayName'),
+        count: c.get('defaultNumInstances')
+      });
+    }));
+  }.observes('model.appType.components.@each'),
 
   /**
    * Try call controller's method with name stored in <code>currentAction</code>
@@ -147,7 +192,7 @@ App.SliderAppController = Ember.ObjectController.extend({
   },
 
   /**
-   * Map <code>model.components</code> for Flex request
+   * Map <code>appTypeComponents</code> for Flex request
    * Output format:
    * <code>
    *   {
@@ -165,9 +210,9 @@ App.SliderAppController = Ember.ObjectController.extend({
    */
   mapComponentsForFlexRequest: function() {
     var components = {};
-    this.get('model.components').forEach(function(component) {
+    this.get('componentsForFlex').forEach(function(component) {
       components[component.get('name')] = {
-        instanceCount: component.get('defaultNumInstances')
+        instanceCount: component.get('count')
       }
     });
     return components;
@@ -197,6 +242,21 @@ App.SliderAppController = Ember.ObjectController.extend({
     this.transitionToRoute('slider_apps');
   },
 
+  /**
+   * Create Modal Popup with data for Flex action
+   * @method showFlexModal
+   */
+  showFlexModal: function() {
+    this.set('updateFlexComponents', false);
+    Bootstrap.ModalManager.open(
+      'flexModal',
+      Ember.I18n.t('slider.app.flexPopup.title'),
+      'slider_app/flex_popup',
+      this.get('customActionPopupButtons'),
+      this
+    );
+  },
+
   actions: {
 
     /**
@@ -220,7 +280,7 @@ App.SliderAppController = Ember.ObjectController.extend({
 
     /**
      * Handler for Actions menu elements click
-     * @param {{title: string, action: string, confirm: bool}} option
+     * @param {{title: string, action: string, confirm: bool, customAction: string}} option
      * @method openModal
      */
     openModal: function(option) {
@@ -235,8 +295,41 @@ App.SliderAppController = Ember.ObjectController.extend({
         );
       }
       else {
-        this.tryDoAction();
+        if (option.customAction) {
+          this[option.customAction]();
+        }
+        else {
+          this.tryDoAction();
+        }
       }
+    },
+
+    /**
+     * Close popup and restore <code>componentsForFlex</code> updating
+     * @returns {*}
+     * @method submitCustom
+     */
+    submitCustom: function() {
+      var error = false;
+      this.get('componentsForFlex').forEach(function(c) {
+        var count = c.get('count').toString();
+        if(!(count.trim().length && (count % 1 == 0))) {
+          error = true;
+        }
+      });
+      this.set('componentsForFlexContainsError', error);
+      if (error) return;
+      this.flex();
+      this.set('updateFlexComponents', true);
+      return Bootstrap.ModalManager.close('flexModal');
+    },
+
+    /**
+     * Turn on <code>updateFlexComponents</code>
+     * @method restoreUpdates
+     */
+    restoreUpdates: function() {
+      this.set('updateFlexComponents', true);
     }
   }
 
