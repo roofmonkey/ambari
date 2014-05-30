@@ -61,7 +61,7 @@ App.SliderApp = DS.Model.extend({
   /**
    * @type {App.SliderAppComponent[]}
    */
-  components: DS.hasMany('sliderAppComponent', {async:true}),
+  components: DS.hasMany('sliderAppComponent'),
 
   /**
    * @type {App.QuickLink[]}

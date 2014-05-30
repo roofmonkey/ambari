@@ -42,6 +42,12 @@
               <td>{{t common.diagnostics}}</td>
               <td>{{formatWordBreak controller.model.diagnostics}}</td>
             </tr>
+            {{#each controller.sumComponents}}
+              <tr>
+                <td>{{name}}</td>
+                <td><span {{bind-attr class="color"}}>{{live}}/{{total}}</span> {{t common.live}}</td>
+              </tr>
+            {{/each}}
             {{#each controller.model.jmx}}
               <tr>
                 <td>{{key}}</td>
@@ -52,18 +58,28 @@
         </table>
       {{/bs-panel}}
     </div>
-    <div class="col-md-6">
+    <div class="col-md-6 components-wrapp">
       {{#bs-panel heading="Components"}}
-        <table class="table section-table table-condensed">
+        <table class="table section-table table-condensed" id="components-table">
+          <thead>
+            {{#view view.parentView.sortView classNames="label-row" contentBinding="view.parentView.filteredContent"}}
+              {{view view.parentView.parentView.componentNameSort}}
+              {{view view.parentView.parentView.hostSort}}
+            {{/view}}
+          </thead>
           <tbody>
-            {{#each controller.model.components}}
-            <tr>
-              <td>
-                <i {{bind-attr class="isRunning:icon-ok-sign:icon-warning-sign"}}></i><span>&nbsp;</span>{{componentName}}
-              </td>
-              <td>{{host}}</td>
-            </tr>
-            {{/each}}
+            {{#if view.parentView.pageContent}}
+              {{#each component in view.parentView.pageContent}}
+                <tr>
+                  <td><i {{bind-attr class="component.isRunning:icon-ok-sign:icon-warning-sign"}}></i><span>&nbsp;</span>{{component.componentName}}</td>
+                  <td>{{component.host}}</td>
+                </tr>
+              {{/each}}
+            {{else}}
+                <tr>
+                    <td colspan="2">{{t tableView.filters.noItems}}</td>
+                </tr>
+            {{/if}}
           </tbody>
         </table>
       {{/bs-panel}}

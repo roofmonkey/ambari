@@ -19,5 +19,45 @@
 App.SliderAppSummaryController = Ember.Controller.extend({
   appType: function () {
     return this.get('model.appType.displayName');
-  }.property('model.appType')
+  }.property('model.appType'),
+
+  sumComponents: function () {
+    var componentsResult = [],
+    appStatus = this.get('model.status'),
+    components = this.get('model.components.content');
+    if(!components){
+      return [];
+    }
+    componentsNames = components.mapBy('componentName').uniq();
+    componentsNames.splice(componentsNames.indexOf("slider-appmaster"), 1);
+    componentsNames.forEach(function (componentName) {
+      var live = components.filterBy('componentName', componentName).filterBy('isRunning', true).length,
+      total =  components.filterBy('componentName', componentName).length,
+      color = (total - live == 0) ? 'green' : 'red';
+      color = (appStatus == 'FROZEN') ? '' : color;
+
+      componentsResult.push({
+        name : componentName,
+        live : live,
+        total: total,
+        color: color
+      });
+    });
+    return componentsResult;
+  }.property('model.components.@each'),
+
+  componentsSection: function () {
+    var components = this.get('model.components.content') || [];
+    var result = [];
+    components.forEach(function (component){
+      if(component.get('componentName') != "slider-appmaster"){
+        result.push({
+          isRunning: component.get('isRunning'),
+          host: component.get('host'),
+          componentName: component.get('componentName')
+        });
+      }
+    });
+    return result;
+  }.property('model.components.@each')
 });

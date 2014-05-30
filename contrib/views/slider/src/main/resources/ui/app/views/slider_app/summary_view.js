@@ -15,10 +15,46 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+var filters = require('views/common/filter_view');
+var sort = require('views/common/sort_view');
 
-App.SliderAppSummaryView = Ember.View.extend({
+App.SliderAppSummaryView = App.TableView.extend({
 
   classNames: ['app_summary'],
+
+  content: function () {
+    return this.get('controller.componentsSection');
+  }.property('controller.componentsSection.length'),
+
+  didInsertElement: function () {
+    this.set('pagination', false);
+    this.set('filteredContent',this.get('content'));
+  },
+
+  sortView: sort.wrapperView,
+  componentNameSort: sort.fieldView.extend({
+    column: 0,
+    name:'componentName',
+    displayName: "Name"
+  }),
+
+  hostSort: sort.fieldView.extend({
+    column: 1,
+    name:'host',
+    displayName: "Host"
+  }),
+
+  /**
+   * associations between host property and column index
+   * @type {Array}
+   */
+  colPropAssoc: function(){
+    var associations = [];
+    associations[0] = 'componentName';
+    associations[1] = 'host';
+    return associations;
+  }.property(),
+
 
   /**
    * List of graphs shown on page

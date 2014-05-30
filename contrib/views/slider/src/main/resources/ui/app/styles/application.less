@@ -529,6 +529,25 @@ a {
   .container {
     padding-left: 0;
     width: 95%;
+    .components-wrapp{
+      #collapseOne{
+        max-height: 400px;
+        overflow-y: scroll;
+      }
+    }
+    #components-table{
+      .label-row{
+        cursor: pointer;
+      }
+    }
+    table {
+      .red {
+        color: #FF0000;
+      }
+      .green {
+        color: #008000;
+      }
+    }
   }
 }
 
@@ -540,9 +559,6 @@ a {
 
 .table.section-table {
   border: none !important;
-  tr td:first-child {
-    text-align: right;
-  }
 }
 
 .table.section-table th, .table.section-table td {

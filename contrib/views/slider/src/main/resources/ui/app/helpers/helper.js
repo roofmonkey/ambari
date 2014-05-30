@@ -75,6 +75,6 @@ App.registerBoundHelper('formatWordBreak', Em.View.extend({
    * @type {string}
    */
   result: function() {
-    return this.get('content') && this.get('content').replace(/\//g, '/<wbr />');
+    return this.get('content') && this.get('content').replace(/\//g, '/<wbr />').replace(/\./g, '/.<wbr />');
   }.property('content')
 }));

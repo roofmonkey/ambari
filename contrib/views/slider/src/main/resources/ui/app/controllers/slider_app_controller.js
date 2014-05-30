@@ -108,7 +108,7 @@ App.SliderAppController = Ember.ObjectController.extend({
    * @method componentsForFlexObs
    */
   componentsForFlexObs: function() {
-    if (!this.get('updateFlexComponents')) return;
+    if (!this.get('updateFlexComponents') || !this.get('model.appType.components')) return;
     this.set('componentsForFlex', this.get('model.appType.components').map(function(c) {
       return Ember.Object.create({
         name: c.get('displayName'),
