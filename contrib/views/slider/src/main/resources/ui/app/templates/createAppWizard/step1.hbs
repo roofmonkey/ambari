@@ -33,6 +33,8 @@
     <p>
       {{controller.typeDescription}}
     </p>
+    <p>{{controller.selectedType.version}}</p>
+    <p>{{controller.selectedType.description}}</p>
   </div>
 </div>
 <button class="btn btn-success pull-right next-btn" {{bind-attr disabled="controller.isSubmitDisabled"}} {{action submit target="controller"}}>{{t common.next}} &rarr;</button>
