@@ -67,7 +67,7 @@ Em.I18n.translations = {
   'wizard.step1.header': 'Available Types',
   'wizard.step1.description': 'Description',
   'wizard.step1.typeDescription': 'Deploys {0} cluster on YARN.',
-  'wizard.step1.nameFormatError': 'App Name should consist only of letters, numbers, \'-\', \'_\' and first character should be a letter.',
+  'wizard.step1.nameFormatError': 'App Name should consist only of lowercase letters, numbers, \'-\', \'_\', and the first character should be a letter.',
   'wizard.step1.nameRepeatError': 'App with entered Name already exists.',
   'wizard.step2.name': 'Allocate Resources',
   'wizard.step2.header': 'HBase application requires resources to be allocated on the cluster. Provide resource allocation requests for each component of the application below.',

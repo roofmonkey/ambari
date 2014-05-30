@@ -17,9 +17,9 @@ limitations under the License. Kerberos, LDAP, Custom. Binary/Htt
 <view>
   <name>SLIDER</name>
   <label>Slider Apps View</label>
-  <version>1.0.0</version>
+  <version>0.1.0</version>
   <instance>
-    <name>SLIDER_1</name>
+    <name>Slider</name>
   </instance>
   <resource>
     <name>status</name>

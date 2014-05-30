@@ -46,7 +46,7 @@ App.initializer({
        * Slider version
        * @type {string}
        */
-      version: '1.0.0',
+      version: '0.1.0',
 
       /**
        * Version of SLIDER_1 resource
@@ -57,7 +57,7 @@ App.initializer({
       /**
        * @type {string}
        */
-      instance: 'SLIDER_1',
+      instance: 'Slider',
 
       /**
        * API url for Slider

@@ -18,6 +18,12 @@
 
 html {
   overflow-y: scroll;
+  body {
+    margin-top: 0px;
+    h2 {
+      margin-top: 0px;
+    }
+  }
 }
 
 a {
@@ -35,8 +41,11 @@ a {
     font-size: 13px\9;
     table-layout: fixed;
 
-    th {
-      width: 17.5%!important;
+    tr th:nth-last-child(1) {
+      width: 22%!important;
+    }
+    tr th:nth-last-child(2) {
+      width: 22%!important;
     }
 
     select {
