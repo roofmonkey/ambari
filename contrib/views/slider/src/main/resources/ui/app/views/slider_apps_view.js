@@ -127,16 +127,6 @@ App.SliderAppsView = App.TableView.extend({
     }
   }),
 
-  startFilterView: filters.createSelectView({
-    column: 4,
-    fieldType: 'filter-input-width',
-    content: ['', 'Past 1 hour',  'Past 1 Day', 'Past 2 Days', 'Past 7 Days', 'Past 14 Days', 'Past 30 Days', 'Custom'],
-    onChangeValue: function(){
-      this.get('parentView').updateFilter(this.get('column'), this.get('value'), 'date');
-    },
-    type: 'number'
-  }),
-
   /**
    * associations between host property and column index
    * @type {Array}

@@ -62,7 +62,7 @@
       <th>{{view view.statusFilterView}}</th>
       <th>{{view view.typeFilterView}}</th>
       <th>{{view view.userFilterView}}</th>
-      <th>{{view view.startFilterView}}</th>
+      <th></th>
       <th></th>
     </tr>
     </thead>
@@ -83,9 +83,9 @@
 
           <td>{{slider.user}}</td>
 
-          <td>{{slider.started}}</td>
+          <td>{{slider.startTimeDisplay}}</td>
 
-          <td>{{slider.ended}}</td>
+          <td>{{slider.endTimeDisplay}}</td>
 
           {{/view}}
         {{/each}}

@@ -95,7 +95,25 @@ App.SliderApp = DS.Model.extend({
   jmx: DS.attr('object'),
   
   supportedMetricNames: DS.attr('string'),
-  
+
+  startTimeDisplay : function() {
+    var startTime = this.get('started');
+    if (startTime > 0) {
+      return (new Date(startTime).toUTCString());
+    } else {
+      return "-";
+    }
+  }.property('started'),
+
+  endTimeDisplay : function() {
+    var endTime = this.get('ended');
+    if (endTime > 0) {
+      return (new Date(endTime).toUTCString());
+    } else {
+      return "-";
+    }
+  }.property('ended'),
+
   /**
    * Global configs
    * @type {{key: string, value: *}[]}
