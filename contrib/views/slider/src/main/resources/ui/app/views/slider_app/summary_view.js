@@ -20,8 +20,27 @@ App.SliderAppSummaryView = Ember.View.extend({
 
   classNames: ['app_summary'],
 
-  graphs: [
+  graphsOld: [
     [App.MetricView, App.Metric2View, App.Metric3View, App.Metric4View]
-  ]
+  ],
 
+  graphs : function() {
+    var app = this.get('controller.content');
+    if (app) {
+      console.log(">>> Summary view of app ", app);
+      var supportedMetrics = app.get('supportedMetricNames');
+      if (supportedMetrics && supportedMetrics.length > 0) {
+        var graphs = [];
+        supportedMetrics.split(',').forEach(function(metricName) {
+          var graph = App.AppMetricView.extend({
+            app: app,
+            metricName: metricName
+          });
+          graphs.push(graph);
+        });
+        return [graphs];
+      }
+    }
+    return [[]];
+  }.property('controller.content.supportedMetricNames')
 });

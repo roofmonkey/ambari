@@ -69,6 +69,14 @@
         "metric7" : "",
         "metric8" : ""
       },
+      "supportedMetrics": [
+		"splitSize_avg_time",
+		"splitTime_avg_time",
+		"cluster_requests",
+		"regions",
+		"flushQueueSize",
+		"readRequestsCount"
+	  ],
       "components" : {
         "HBASE_MASTER" : {
           "componentName" : "HBASE_MASTER",

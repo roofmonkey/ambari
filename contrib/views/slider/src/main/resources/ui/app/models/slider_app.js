@@ -93,7 +93,9 @@ App.SliderApp = DS.Model.extend({
   configs: DS.attr('object'),
 
   jmx: DS.attr('object'),
-
+  
+  supportedMetricNames: DS.attr('string'),
+  
   /**
    * Global configs
    * @type {{key: string, value: *}[]}

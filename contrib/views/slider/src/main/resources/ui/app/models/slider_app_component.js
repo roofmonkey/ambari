@@ -36,7 +36,11 @@ App.SliderAppComponent = DS.Model.extend({
   /**
    * @type {App.SliderApp}
    */
-  appId: DS.belongsTo('sliderApp')
+  appId: DS.belongsTo('sliderApp'),
+  
+  isRunning: function() {
+    return this.get('status') == 'Running';
+  }.property('status')
 
 });
 

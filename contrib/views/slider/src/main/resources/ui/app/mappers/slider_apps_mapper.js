@@ -87,11 +87,24 @@ App.SliderAppsMapper = App.Mapper.createWithMixins(App.RunPeriodically, {
   parseQuickLinks : function(data) {
     var quickLinks = [],
     appId = data.id;
+    var yarnAppId = appId;
+    var index = appId.lastIndexOf('_');
+    if (index > 0) {
+      yarnAppId = appId.substring(0, index + 1);
+      for (var k = (appId.length - index - 1); k < 4; k++) {
+        yarnAppId += '0';
+      }
+      yarnAppId += appId.substring(index + 1);
+    }
+    var yarnUI = "http://"+window.location.hostname+":8088";
+    if (App.viewUrls) {
+      yarnUI = App.viewUrls['yarn.resourcemanager.webapp.address'];
+    }
     quickLinks.push(
       Ember.Object.create({
         id: 'YARN application',
         label: 'YARN application',
-        url: "http://"+window.location.hostname+":8088"
+        url: yarnUI + '/cluster/app/application_' + yarnAppId
       })
     );
 
@@ -119,6 +132,13 @@ App.SliderAppsMapper = App.Mapper.createWithMixins(App.RunPeriodically, {
     });
   },
 
+  parseMetricNames : function(app) {
+    if (app.supportedMetrics) {
+      return app.supportedMetrics.join(",");
+    }
+    return "";
+  },
+
   /**
    * Parse loaded data
    * Load <code>App.SliderApp</code> model
@@ -143,6 +163,7 @@ App.SliderAppsMapper = App.Mapper.createWithMixins(App.RunPeriodically, {
       if(masterStartTime){
         masterStartTime.value = (new Date(masterStartTime.value).toUTCString());
       }
+      var metricNames = self.parseMetricNames(app);
       apps.push(
         Ember.Object.create({
           id: app.id,
@@ -158,7 +179,8 @@ App.SliderAppsMapper = App.Mapper.createWithMixins(App.RunPeriodically, {
           quickLinks: quickLinks,
           configs: configs,
           jmx: jmx,
-          runtimeProperties: app.configs
+          runtimeProperties: app.configs,
+          supportedMetricNames: metricNames
         })
       );
 
