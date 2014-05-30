@@ -154,15 +154,7 @@ App.SliderAppsMapper = App.Mapper.createWithMixins(App.RunPeriodically, {
       var componentsId = app.components ? self.parseComponents(app) : [],
       configs = app.configs ? self.parseConfigs(app) : {},
       quickLinks = self.parseQuickLinks(app),
-      jmx = self.parseObject(app.jmx),
-      masterActiveTime = jmx.findProperty('key', 'MasterActiveTime'),
-      masterStartTime = jmx.findProperty('key', 'MasterStartTime');
-      if(masterActiveTime){
-        masterActiveTime.value = new Date(Date.now() - masterActiveTime.value).getHours() + "h:" + new Date(Date.now() - masterActiveTime.value).getMinutes() + "m";
-      }
-      if(masterStartTime){
-        masterStartTime.value = (new Date(masterStartTime.value).toUTCString());
-      }
+      jmx = self.parseObject(app.jmx);
       var metricNames = self.parseMetricNames(app);
       apps.push(
         Ember.Object.create({

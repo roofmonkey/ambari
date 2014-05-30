@@ -85,29 +85,39 @@ App.SliderAppSummaryView = App.TableView.extend({
     var model = this.get('controller.model'),
       existingGraphs = this.get('graphs');
     if (model) {
+      var currentGraphIds = [];
       var supportedMetrics = model.get('supportedMetricNames');
       if (supportedMetrics && supportedMetrics.length > 0) {
+        var appId = model.get('id');
         supportedMetrics.split(',').forEach(function(metricName) {
-          if (!existingGraphs.isAny('id', metricName)) {
+          var graphId = metricName + '_' + appId;
+          currentGraphIds.push(graphId);
+          if (!existingGraphs.isAny('id', graphId)) {
             var view = App.AppMetricView.extend({
               app: model,
               metricName: metricName
             });
-            existingGraphs.push({id: metricName, view: view});
+            existingGraphs.push({
+              id : graphId,
+              view : view
+            });
           }
         });
       }
-
       // Delete not existed graphs
       var toDeleteGraphs = [];
       existingGraphs.forEach(function(existingGraph) {
-        if (supportedMetrics.indexOf(existingGraph) == -1) {
+       if (currentGraphIds.indexOf(existingGraph.id) == -1) {
           toDeleteGraphs.push(existingGraph);
         }
       });
-      toDeleteGraphs.forEach(function(toDeleteGraph) {
-        existingGraphs = existingGraphs.without(toDeleteGraph);
-      });
+      if(toDeleteGraphs.length > 0) {
+        var newGraphs = existingGraphs;
+        toDeleteGraphs.forEach(function(toDeleteGraph) {
+          newGraphs = newGraphs.without(toDeleteGraph);
+        });
+        this.set('graphs', newGraphs);
+      }
     }
   }.observes('controller.model.supportedMetricNames')
 });

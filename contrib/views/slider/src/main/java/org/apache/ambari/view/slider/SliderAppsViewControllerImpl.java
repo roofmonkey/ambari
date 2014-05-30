@@ -947,7 +947,10 @@ public class SliderAppsViewControllerImpl implements SliderAppsViewController {
           return sliderClient.applicationId;
         }
       });
-      logger.debug("Slider app has been frozen - " + applicationId.toString());
+      if (applicationId != null) {
+        logger
+            .debug("Slider app has been frozen - " + applicationId.toString());
+      }
     } finally {
       Thread.currentThread().setContextClassLoader(currentClassLoader);
     }
@@ -976,7 +979,10 @@ public class SliderAppsViewControllerImpl implements SliderAppsViewController {
           return sliderClient.applicationId;
         }
       });
-      logger.debug("Slider app has been thawed - " + applicationId.toString());
+      if (applicationId != null) {
+        logger
+            .debug("Slider app has been thawed - " + applicationId.toString());
+      }
     } finally {
       Thread.currentThread().setContextClassLoader(currentClassLoader);
     }
@@ -1002,15 +1008,19 @@ public class SliderAppsViewControllerImpl implements SliderAppsViewController {
           SliderClient sliderClient = getSliderClient();
           ActionFlexArgs flexArgs = new ActionFlexArgs();
           flexArgs.parameters.add(sliderApp.getName());
-          for (Entry<String, Integer> e : componentsMap.entrySet()){
+          for (Entry<String, Integer> e : componentsMap.entrySet()) {
             flexArgs.componentDelegate.componentTuples.add(e.getKey());
-            flexArgs.componentDelegate.componentTuples.add(e.getValue().toString());
+            flexArgs.componentDelegate.componentTuples.add(e.getValue()
+                .toString());
           }
           sliderClient.actionFlex(sliderApp.getName(), flexArgs);
           return sliderClient.applicationId;
         }
       });
-      logger.debug("Slider app has been thawed - " + applicationId.toString());
+      if (applicationId != null) {
+        logger
+            .debug("Slider app has been flexed - " + applicationId.toString());
+      }
     } finally {
       Thread.currentThread().setContextClassLoader(currentClassLoader);
     }

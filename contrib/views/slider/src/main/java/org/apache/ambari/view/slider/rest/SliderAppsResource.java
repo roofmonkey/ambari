@@ -91,10 +91,13 @@ public class SliderAppsResource {
         JsonObject requestJson = requestContent.getAsJsonObject();
         if (requestJson.has("state")) {
           String newState = requestJson.get("state").getAsString();
-          if ("FROZEN".equals(newState))
+          if ("FROZEN".equals(newState)) {
             sliderAppsViewController.freezeApp(appId);
-          else if ("RUNNING".equals(newState))
+            return Response.ok().build();
+          } else if ("RUNNING".equals(newState)) {
             sliderAppsViewController.thawApp(appId);
+            return Response.ok().build();
+          }
         } else if (requestJson.has("components")) {
           Map<String, Integer> componentsMap = new HashMap<String, Integer>();
           JsonObject componentsJson = requestJson.get("components")
@@ -106,6 +109,7 @@ public class SliderAppsResource {
             componentsMap.put(componentName, instanceCount);
           }
           sliderAppsViewController.flexApp(appId, componentsMap);
+          return Response.ok().build();
         }
       }
       String sliderApp = sliderAppsViewController

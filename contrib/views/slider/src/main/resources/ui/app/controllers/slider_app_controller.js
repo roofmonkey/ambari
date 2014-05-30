@@ -145,7 +145,8 @@ App.SliderAppController = Ember.ObjectController.extend({
           name: model.get('name'),
           state: "RUNNING"
         }
-      }
+      },
+      complete: 'thawCompleteCallback'
     });
   },
 
@@ -235,10 +236,18 @@ App.SliderAppController = Ember.ObjectController.extend({
   },
 
   /**
-   * Complate-callback for "destroy app"-request
+   * Complete-callback for "destroy app"-request
    * @method destroyCompleteCallback
    */
   destroyCompleteCallback: function() {
+    this.transitionToRoute('slider_apps');
+  },
+
+  /**
+   * Complete-callback for "thaw app"-request
+   * @method thawCompleteCallback
+   */
+  thawCompleteCallback: function() {
     this.transitionToRoute('slider_apps');
   },
 
