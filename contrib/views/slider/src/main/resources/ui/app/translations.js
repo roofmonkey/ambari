@@ -50,6 +50,9 @@ Em.I18n.translations = {
   'popup.confirmation.commonHeader': 'Confirmation',
   'question.sure':'Are you sure?',
 
+  'yarn.ui': 'YARN UI',
+  'hdfs.ui': 'HDFS UI',
+
   'tableView.filters.all': 'All',
   'tableView.filters.filtered': 'Filtered',
   'tableView.filters.clearFilters': 'Clear filters',

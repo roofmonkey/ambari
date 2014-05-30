@@ -19,10 +19,10 @@
 <div>
   <h2>{{t slider.apps.title}}</h2>
 </div>
-{{#if App.viewEnabled}}
-  {{outlet}}
-{{else}}
+<div class="alert alert-danger">
   {{#each error in App.viewErrors}}
     <h3>{{error}}</h3>
   {{/each}}
-{{/if}}
+</div>
+{{outlet}}
+
